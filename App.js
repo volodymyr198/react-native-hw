@@ -1,42 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
-import {
-    StyleSheet,
-    ImageBackground,
-    View,
-    TouchableWithoutFeedback,
-    Keyboard,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import RegistrationScreen from './src/Screens/RegistrationScreen.jsx';
-import LoginScreen from './src/Screens/LoginScreen.jsx';
+import { createContext, useState } from 'react';
+
+import useRoute from './router';
+
+export const isAuthContext = createContext(false);
 
 export default function App() {
-    return (
-        <View style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <ImageBackground
-                    style={styles.imgBg}
-                    source={require('./assets/images/bg.jpg')}
-                >
-                    <RegistrationScreen />
+    const [isAuth, setIsAuth] = useState(false);
 
-                    {/* <LoginScreen /> */}
-                    <StatusBar style="auto" />
-                </ImageBackground>
-            </TouchableWithoutFeedback>
-        </View>
+    const toggleIsAuth = () => {
+        setIsAuth(prevAuth => (prevAuth === false ? true : false));
+    };
+
+    const routing = useRoute(isAuth);
+
+    return (
+        <>
+            <isAuthContext.Provider value={{ isAuth, toggleIsAuth }}>
+                <StatusBar style="auto" />
+                <NavigationContainer>{routing}</NavigationContainer>
+            </isAuthContext.Provider>
+        </>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-    },
-    imgBg: {
-        flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
-    },
-});

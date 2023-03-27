@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
     StyleSheet,
@@ -16,6 +16,7 @@ import {
 
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { isAuthContext } from '../../../App';
 
 const initialState = {
     username: '',
@@ -31,7 +32,7 @@ const initialFocuseState = {
 
 SplashScreen.preventAutoHideAsync();
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({ navigation }) => {
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [state, setState] = useState(initialState);
     const [isFocusInput, setIsFocusInput] = useState(initialFocuseState);
@@ -42,17 +43,22 @@ const RegistrationScreen = () => {
     };
 
     const [fontsLoaded] = useFonts({
-        RobotoRegular: require('../../assets/fonts/Roboto-Regular.ttf'),
-        RobotoMedium: require('../../assets/fonts/Roboto-Medium.ttf'),
+        RobotoRegular: require('../../../assets/fonts/Roboto-Regular.ttf'),
+        RobotoMedium: require('../../../assets/fonts/Roboto-Medium.ttf'),
     });
     const onLayoutRootView = useCallback(async () => {
         if (fontsLoaded) {
             await SplashScreen.hideAsync();
         }
     }, [fontsLoaded]);
+
+    const { toggleIsAuth } = useContext(isAuthContext);
+
     const keyboardHide = () => {
         setIsShowKeyboard(false);
         Keyboard.dismiss();
+        toggleIsAuth();
+        navigation.navigate('Home');
         setState(initialState);
     };
     if (!fontsLoaded) {
@@ -63,7 +69,7 @@ const RegistrationScreen = () => {
         <TouchableWithoutFeedback onPress={keyboardHide}>
             <View style={styles.container}>
                 <ImageBackground
-                    source={require('../../assets/images/bg.jpg')}
+                    source={require('../../../assets/images/bg.jpg')}
                     style={styles.imageBg}
                 >
                     <KeyboardAvoidingView
@@ -90,7 +96,7 @@ const RegistrationScreen = () => {
                                 <View style={styles.avatarBox}>
                                     <Image
                                         style={styles.avatar}
-                                        source={require('../../assets/images/avatar.png')}
+                                        source={require('../../../assets/images/avatar.png')}
                                     />
                                     <TouchableOpacity
                                         style={styles.addAvatarBth}
@@ -244,7 +250,11 @@ const RegistrationScreen = () => {
                                             Зарегистрироваться
                                         </Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            navigation.navigate('Login')
+                                        }
+                                    >
                                         <Text style={styles.formLink}>
                                             Уже есть аккаунт? Войти
                                         </Text>

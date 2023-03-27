@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import {
     StyleSheet,
     TextInput,
@@ -15,6 +15,8 @@ import {
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
+import { isAuthContext } from '../../../App';
+
 const initialState = {
     email: '',
     password: '',
@@ -27,7 +29,7 @@ const initialFocuseState = {
 
 SplashScreen.preventAutoHideAsync();
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [state, setState] = useState(initialState);
     const [isFocusInput, setIsFocusInput] = useState(initialFocuseState);
@@ -38,8 +40,8 @@ const LoginScreen = () => {
     };
 
     const [fontsLoaded] = useFonts({
-        RobotoRegular: require('../../assets/fonts/Roboto-Regular.ttf'),
-        RobotoMedium: require('../../assets/fonts/Roboto-Medium.ttf'),
+        RobotoRegular: require('../../../assets/fonts/Roboto-Regular.ttf'),
+        RobotoMedium: require('../../../assets/fonts/Roboto-Medium.ttf'),
     });
 
     const onLayoutRootView = useCallback(async () => {
@@ -48,9 +50,13 @@ const LoginScreen = () => {
         }
     }, [fontsLoaded]);
 
+    const { toggleIsAuth } = useContext(isAuthContext);
+
     const keyboardHide = () => {
         setIsShowKeyboard(false);
         Keyboard.dismiss();
+        toggleIsAuth();
+        navigation.navigate('Home');
         setState(initialState);
     };
 
@@ -59,10 +65,15 @@ const LoginScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={keyboardHide}>
+        <TouchableWithoutFeedback
+            // onPress={keyboardHide}
+            onPress={() => {
+                Keyboard.dismiss();
+            }}
+        >
             <View style={styles.container}>
                 <ImageBackground
-                    source={require('../../assets/images/bg.jpg')}
+                    source={require('../../../assets/images/bg.jpg')}
                     style={styles.imageBg}
                 >
                     <KeyboardAvoidingView
@@ -195,7 +206,11 @@ const LoginScreen = () => {
                                             Войти
                                         </Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            navigation.navigate('Registration')
+                                        }
+                                    >
                                         <Text style={styles.formLink}>
                                             Нет аккаунта? Зарегистрироваться
                                         </Text>
