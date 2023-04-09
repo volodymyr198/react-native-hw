@@ -1,47 +1,95 @@
-import { StyleSheet, View, Text, Image } from 'react-native';
+import React from 'react';
+import { SimpleLineIcons, Feather } from '@expo/vector-icons';
 
-const Home = () => {
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tabs = createBottomTabNavigator();
+
+import CreatePostsScreen from './CreatePostsScreen';
+import PostsScreen from './PostsScreen';
+import ProfileScreen from './ProfileScreen';
+
+export default function Home({ navigation }) {
     return (
-        <View style={styles.container}>
-            <View style={styles.userInfo}>
-                <View style={styles.imgBox}>
-                    <Image
-                        style={styles.avatar}
-                        source={require('../../../assets/images/avatar.png')}
-                    />
-                </View>
-                <View>
-                    <Text style={styles.name}>Natali Romanova</Text>
-                    <Text style={styles.email}>email@example.com</Text>
-                </View>
-            </View>
-        </View>
-    );
-};
+        <Tabs.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+                tabBarShowLabel: false,
+                tabBarStyle: {
+                    height: 80,
+                },
+            }}
+        >
+            <Tabs.Screen
+                name="Posts"
+                component={PostsScreen}
+                options={{
+                    tabBarIcon: ({ focused, size, color }) => (
+                        <SimpleLineIcons
+                            name="grid"
+                            size={size}
+                            color={color}
+                        />
+                    ),
+                    title: 'Публикации',
+                    headerTitleAlign: 'center',
+                    headerRightContainerStyle: { paddingRight: 20 },
+                    headerRight: () => (
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            onPress={() => navigation.navigate('Login')}
+                        >
+                            <Feather name="log-out" size={24} color="gray" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="CreatePosts"
+                component={CreatePostsScreen}
+                options={{
+                    tabBarIcon: ({ focused, size, color }) => (
+                        <TouchableOpacity
+                            style={styles.addButton}
+                            activeOpacity={0.5}
+                            onPress={() => navigation.navigate('CreatePosts')}
+                        >
+                            <Text style={styles.addButtonText}>+</Text>
+                        </TouchableOpacity>
+                    ),
 
-export default Home;
+                    title: 'Создать публикацию',
+                    headerTitleAlign: 'center',
+                }}
+            />
+            <Tabs.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    headerShown: false,
+                    tabBarIcon: ({ focused, size, color }) => (
+                        <Feather name="user" size={size} color={color} />
+                    ),
+                }}
+            />
+        </Tabs.Navigator>
+    );
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 15,
-    },
-    userInfo: {
-        flexDirection: 'row',
-        marginTop: 32,
-        height: 60,
+    addButton: {
+        backgroundColor: '#FF6C00',
+        height: 40,
+        width: 70,
+        justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: 20,
     },
-    imgBox: {
-        width: 60,
-        height: 60,
-        backgroundColor: '#E8E8E8',
-        marginRight: 8,
-    },
-    avatar: {
-        width: 60,
-        height: 60,
-        borderRadius: 16,
+
+    addButtonText: {
+        color: '#ffffff',
+        fontSize: 28,
     },
 });

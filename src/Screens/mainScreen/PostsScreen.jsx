@@ -1,39 +1,23 @@
-import { StyleSheet, View, Text } from 'react-native';
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const PostsScreen = () => {
+const NestedScreen = createStackNavigator();
+import DefaultScreenPosts from '../PostsScreens/DefaultScreenPosts';
+import CommentsScreen from '../PostsScreens/CommentsScreen';
+import MapScreen from '../PostsScreens/MapScreen';
+
+export default function PostsScreen() {
     return (
-        <View style={styles.container}>
-            <View style={styles.headerWrapper}>
-                <Text style={styles.headerText}>PostsScreen</Text>
-            </View>
-            <View style={styles.tabBarWrapper}></View>
-        </View>
+        <NestedScreen.Navigator
+            initialRouteName="DefaultScreen"
+            screenOptions={{ headerShown: false }}
+        >
+            <NestedScreen.Screen
+                name="DefaultScreen"
+                component={DefaultScreenPosts}
+            />
+            <NestedScreen.Screen name="Comments" component={CommentsScreen} />
+            <NestedScreen.Screen name="Map" component={MapScreen} />
+        </NestedScreen.Navigator>
     );
-};
-
-export default PostsScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
-    headerWrapper: {
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        height: 88,
-        borderBottomWidth: 1,
-        borderBottomColor: '#BDBDBD',
-    },
-    headerText: {
-        marginBottom: 11,
-        fontSize: 17,
-    },
-    tabBarWrapper: {
-        marginTop: 570,
-        alignItems: 'center',
-        height: 88,
-        borderBottomWidth: 1,
-        borderBottomColor: '#BDBDBD',
-    },
-});
+}
