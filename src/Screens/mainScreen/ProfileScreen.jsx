@@ -7,10 +7,23 @@ import {
     SafeAreaView,
     ScrollView,
 } from 'react-native';
-
+import { useSelector, useDispatch } from 'react-redux';
 import { AntDesign, Feather } from '@expo/vector-icons';
 
+import { logoutUser } from '../../redux/auth/authOperations';
+import { selectName } from '../../redux/auth/authSelectors.js';
+
 export default function ProfileScreen({ navigation }) {
+    const nameUser = useSelector(selectName);
+
+    const dispatch = useDispatch();
+
+    const logout = async () => {
+        await dispatch(logoutUser()).then(response => {
+            response.meta.requestStatus === 'fulfilled' &&
+                navigation.navigate('Login');
+        });
+    };
     return (
         <SafeAreaView>
             <ScrollView>
@@ -35,7 +48,7 @@ export default function ProfileScreen({ navigation }) {
                                 <TouchableOpacity
                                     style={styles.logout}
                                     activeOpacity={0.5}
-                                    onPress={() => navigation.navigate('Login')}
+                                    onPress={logout}
                                 >
                                     <Feather
                                         name="log-out"
@@ -45,7 +58,7 @@ export default function ProfileScreen({ navigation }) {
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.title}>Natali Romanova</Text>
+                            <Text style={styles.title}>{nameUser}</Text>
                         </View>
                     </View>
                 </ImageBackground>

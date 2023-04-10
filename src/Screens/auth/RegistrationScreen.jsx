@@ -11,6 +11,9 @@ import {
     Keyboard,
     ImageBackground,
 } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { registerUser } from '../../redux/auth/authOperations';
+import { selectIsLoggedIn } from '../../redux/auth/authSelectors';
 
 const initialState = {
     login: '',
@@ -23,7 +26,11 @@ export default function RegistrationScreen({ navigation }) {
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const registration = () => {
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+
+    const dispatch = useDispatch();
+
+    const registration = async () => {
         if (!state.login || !state.email || !state.password) {
             alert('Enter all data please!!!');
             return;
@@ -31,8 +38,12 @@ export default function RegistrationScreen({ navigation }) {
         setIsShowKeyboard(false);
         Keyboard.dismiss();
         setIsShowPassword(false);
-        setState(initialState);
-        navigation.navigate('Home', { screen: 'Posts' });
+        await dispatch(registerUser(state)).then(response => {
+            response.meta.requestStatus === 'fulfilled' &&
+                navigation.navigate('Home', { screen: 'Posts' });
+            response.meta.requestStatus !== 'fulfilled' &&
+                alert('Your data is wrong');
+        });
     };
 
     return (

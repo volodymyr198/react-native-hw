@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -10,6 +10,9 @@ import {
     Keyboard,
     ImageBackground,
 } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginUser, currentUser } from '../../redux/auth/authOperations';
+import { selectIsLoggedIn } from '../../redux/auth/authSelectors';
 
 const initialState = {
     email: '',
@@ -21,7 +24,10 @@ export default function LoginScreen({ navigation }) {
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const login = () => {
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const dispatch = useDispatch();
+
+    const login = async () => {
         if (!state.email || !state.password) {
             alert('Enter all data please!!!');
             return;
@@ -29,8 +35,12 @@ export default function LoginScreen({ navigation }) {
         setIsShowKeyboard(false);
         Keyboard.dismiss();
         setIsShowPassword(false);
-        setState(initialState);
-        navigation.navigate('Home', { screen: 'Posts' });
+        await dispatch(loginUser(state)).then(response => {
+            response.meta.requestStatus === 'fulfilled' &&
+                navigation.navigate('Home', { screen: 'Posts' });
+            response.meta.requestStatus !== 'fulfilled' &&
+                alert('Your data is wrong');
+        });
     };
 
     return (

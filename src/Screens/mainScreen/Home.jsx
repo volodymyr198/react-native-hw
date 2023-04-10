@@ -1,8 +1,7 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { SimpleLineIcons, Feather } from '@expo/vector-icons';
-
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Tabs = createBottomTabNavigator();
@@ -11,7 +10,18 @@ import CreatePostsScreen from './CreatePostsScreen';
 import PostsScreen from './PostsScreen';
 import ProfileScreen from './ProfileScreen';
 
+import { logoutUser } from '../../redux/auth/authOperations';
+
 export default function Home({ navigation }) {
+    const dispatch = useDispatch();
+
+    const logout = async () => {
+        await dispatch(logoutUser()).then(response => {
+            response.meta.requestStatus === 'fulfilled' &&
+                navigation.navigate('Login');
+        });
+    };
+
     return (
         <Tabs.Navigator
             initialRouteName="Login"
@@ -37,10 +47,7 @@ export default function Home({ navigation }) {
                     headerTitleAlign: 'center',
                     headerRightContainerStyle: { paddingRight: 20 },
                     headerRight: () => (
-                        <TouchableOpacity
-                            activeOpacity={0.5}
-                            onPress={() => navigation.navigate('Login')}
-                        >
+                        <TouchableOpacity activeOpacity={0.5} onPress={logout}>
                             <Feather name="log-out" size={24} color="gray" />
                         </TouchableOpacity>
                     ),
